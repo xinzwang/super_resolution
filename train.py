@@ -1,21 +1,25 @@
+import argparse
 import os
 import time
-import argparse
-from tqdm import tqdm
+
+import numpy as np
 import torch
 import torch.nn as nn
 import torch.optim as optim
 from torch.utils.data.dataloader import DataLoader
+from tqdm import tqdm
 
 import models
 from datasets.COCO import COCODataset
 from utils.logger import build_logger
+from utils.test import test
+
 
 def parse_args():
 	parser = argparse.ArgumentParser()
 	parser.add_argument('--model', default='SRCNN', help='SR model')
 	parser.add_argument('--dataset', default='/share/dataset/coco/')
-	parser.add_argument('--scale_factor', default=1, type=int)
+	parser.add_argument('--scale_factor', default=2, type=int)
 	parser.add_argument('--panel_size', default=128, type=int)
 	parser.add_argument('--batch_size', default=64)
 	parser.add_argument('--epoch', default=5001)

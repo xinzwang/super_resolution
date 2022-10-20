@@ -13,7 +13,6 @@ class SRCNN(nn.Module):
 		)
 
 	def forward(self,x):
-		print(x.shape)
 		out = self.up(x)
 		out = self.conv(out)
 		return out
