@@ -65,18 +65,15 @@ def calc_ssim(img1, img2, window_size, channel, size_average = True):
 
 
 def test(model, dataloader, device):
-	SR, HR = None, None
+	psnr_list = []
+	ssim_list = []
 	for i,(lr, hr) in enumerate(tqdm(dataloader)):
 		lr = lr.to(device)
 		hr = hr.to(device)
 		with torch.no_grad():
 			pred = model(lr)
-		if SR == None:
-			SR = pred
-			HR = hr
-		else:
-			SR = torch.cat((SR, pred), axis=0)
-			HR = torch.cat((HR,hr), axis=0)
-	psnr = calc_psnr(SR, HR, scale=1.0)
-	ssim = calc_ssim(SR, HR, window_size=11, channel=3)
-	return psnr, ssim, 0
+		psnr = calc_psnr(pred, hr)
+		ssim = calc_ssim(pred, hr, window_size=11, channel=3)
+		psnr_list.append(psnr)
+		ssim_list.append(ssim_list)
+	return np.mean(psnr_list), np.mean(ssim_list), 0

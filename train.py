@@ -17,7 +17,7 @@ from utils.test import test
 
 def parse_args():
     parser = argparse.ArgumentParser()
-    parser.add_argument('--model', default='SRCNN', help='SR model')
+    parser.add_argument('--model', default='SRDN', help='SR model')
     parser.add_argument('--dataset', default='/share/dataset/coco/')
     parser.add_argument('--scale_factor', default=2, type=int)
     parser.add_argument('--panel_size', default=128, type=int)
