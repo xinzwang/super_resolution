@@ -24,9 +24,6 @@ def calc_psnr(sr, hr, scale=2, rgb_range=1.0, dataset=None):
 
 	valid = diff[..., shave:-shave, shave:-shave]
 	mse = valid.pow(2).mean()
-
-	print(mse)
-
 	return -10 * math.log10(mse)
 
 def gaussian(window_size, sigma):
@@ -40,7 +37,7 @@ def create_window(window_size, channel):
 		return window
 
 def calc_ssim(img1, img2, window_size, channel, size_average = True):
-		window = create_window(window_size, channel)
+		window = create_window(window_size, channel).to(img1.device)
 		mu1 = F.conv2d(img1, window, padding = window_size//2, groups = channel)
 		mu2 = F.conv2d(img2, window, padding = window_size//2, groups = channel)
 

@@ -9,7 +9,7 @@ class COCODataset(Dataset):
 		super().__init__()
 		self.N = panel_size
 		self.scale_factor = scale_factor
-		self.img_paths = glob.glob(path + ('images/test2017/' if test_flag else 'images/val2017/') + '*.jpg')
+		self.img_paths = glob.glob(path + ('images/val2017/' if test_flag else 'images/test2017/') + '*.jpg')
 		return
 
 	def __len__(self):
