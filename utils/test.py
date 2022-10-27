@@ -1,3 +1,5 @@
+import os
+import cv2
 import math
 import numpy as np
 from tqdm import tqdm
@@ -55,11 +57,20 @@ def calc_ssim(img1, img2, window_size, channel, size_average = True):
 		ssim_map = ((2*mu1_mu2 + C1)*(2*sigma12 + C2))/((mu1_sq + mu2_sq + C1)*(sigma1_sq + sigma2_sq + C2))
 
 		if size_average:
-				return ssim_map.mean()
+				return ssim_map.mean().cpu().numpy()
 		else:
-				return ssim_map.mean(1).mean(1).mean(1)
+				return ssim_map.mean(1).mean(1).mean(1).cpu().numpy()
 
-
+def infer_img(path, num, model, dataloader, device):
+	if not os.path.exists(path):
+		os.makedirs(path)
+	lr, _ = next(iter(dataloader))
+	lr = lr.to(device)
+	with torch.no_grad():
+		pred = model(lr)
+	for i, p in enumerate(pred[0:num]):
+		cv2.imwrite(path + '%d.png' %(i), p.cpu().numpy().transpose(1,2,0) * 255)
+	return
 
 def test(model, dataloader, device):
 	psnr_list = []
@@ -69,8 +80,11 @@ def test(model, dataloader, device):
 		hr = hr.to(device)
 		with torch.no_grad():
 			pred = model(lr)
-		psnr = calc_psnr(pred, hr)
-		ssim = calc_ssim(pred, hr, window_size=11, channel=3)
-		psnr_list.append(psnr)
-		ssim_list.append(ssim_list)
-	return np.mean(psnr_list), np.mean(ssim_list), 0
+		psnr_ = calc_psnr(pred, hr)
+		ssim_ = calc_ssim(pred, hr, window_size=11, channel=3)
+		psnr_list.append(psnr_)
+		ssim_list.append(ssim_)
+	psnr = np.mean(psnr_list)
+	ssim = np.mean(ssim_list)
+	print('[Test] psnr:%.5f ssim:%.5f' % (psnr, ssim))
+	return psnr, ssim, 0
