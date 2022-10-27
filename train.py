@@ -25,7 +25,7 @@ def parse_args():
 	parser.add_argument('--epoch', default=5001)
 	parser.add_argument('--lr', default=1e-4, type=float, help='Learning Rate')
 	parser.add_argument('--seed', default=17, type=int)
-	parser.add_argument('--device', default='cpu')
+	parser.add_argument('--device', default='cuda:3')
 	args = parser.parse_args()
 	print(args)
 	return args
@@ -69,7 +69,7 @@ def train(args):
 	test_dataset, test_dataloader = build_dataset(args, test_flag=True)
 
 	# model
-	model = getattr(models, args.model)(channels=3, scale_factor=args.scale_factor)
+	model = getattr(models, args.model)(channels=3, scale_factor=args.scale_factor).to(device)
 
 	# loss optim
 	loss_fn = nn.L1Loss()
