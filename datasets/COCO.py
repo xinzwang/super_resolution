@@ -17,7 +17,7 @@ class COCODataset(Dataset):
 	
 	def __getitem__(self, index):
 		p = self.img_paths[index]
-		hr = cv2.imread(p).astype(np.float32) / 255.0	# np.uint8->np.float32; [0, 1]
+		hr = cv2.imread(p).astype(np.float32) / 255.0	# np.uint8->np.float32; [0, 255]->[0, 1]
 		
 		while hr.shape[0]<self.N or hr.shape[1]<self.N:
 			index += 1
@@ -26,10 +26,10 @@ class COCODataset(Dataset):
 
 		hr = hr[:self.N, :self.N, ...]
 		
-		lr = down_sample(hr, scale_factor=self.scale_factor)
-		lr = lr.transpose(2, 0, 1) / 255.0	# [0-255]->[0,1], HWC->CHW
+		lr = down_sample(hr, scale_factor=self.scale_factor, kernel_size=(9, 9), sigma=3)
+		lr = lr.transpose(2, 0, 1)	# [0-255]->[0,1], HWC->CHW
 
-		hr = hr.transpose(2, 0, 1) / 255.0	# [0-255]->[0,1], HWC->CHW
-
+		hr = hr.transpose(2, 0, 1)	# [0-255]->[0,1], HWC->CHW
+		
 		return lr, hr
 
