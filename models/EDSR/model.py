@@ -10,13 +10,16 @@ class EDSR(nn.Module):
 				kernel_size = 3 
 				scale = scale_factor
 				act = nn.ReLU(True)
+
+				rgb_range = 1
+
 				# url_name = 'r{}f{}x{}'.format(n_resblocks, n_feats, scale)
 				# if url_name in url:
 				# 		self.url = url[url_name]
 				# else:
 				# 		self.url = None
-				# self.sub_mean = common.MeanShift(cfg.rgb_range)
-				# self.add_mean = common.MeanShift(cfg.rgb_range, sign=1)
+				self.sub_mean = common.MeanShift(rgb_range)
+				self.add_mean = common.MeanShift(rgb_range, sign=1)
 
 				# define head module
 				m_head = [conv(channels, n_feats, kernel_size)]

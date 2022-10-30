@@ -30,7 +30,7 @@ class SFTAffineLayer(nn.Module):
 		b = F.leaky_relu(self.conv_b(knn), 0.1, inplace=True)
 
 		x1 = x0 * w + b # affine transform
-		x2 = self.conv_res(x1)
+		x2 = self.conv_res(x0)
 		return (x2+x0, knn)
 		
 
@@ -44,18 +44,21 @@ class SFTConcatLayer(nn.Module):
 			nn.Conv2d(hidden_feats, n_feats, kernel_size=3, padding=1),
 		)
 
-		self.conv_res = ResBlock(conv=conv, n_feats=n_feats, kernel_size=3)
+		self.conv = nn.Sequential(
+			conv(2*n_feats, n_feats, kernel_size=3),
+			nn.ReLU(inplace=True),
+			ResBlock(conv, n_feats, kernel_size=3)
+		)
+		return
 
-		self.conv_tail = nn.Conv2d(self.n_feats*2, self.n_feats, kernel_size=3, padding=3//2)
-	
 	def forward(self, x):
 		# x[0]:feature; x[1]:shared knn
 		x0, knn = x[0], x[1]
 
 		k_feat = F.leaky_relu(self.conv_knn(knn), 0.1, inplace=True)
+		# k_feat = self.conv_knn(knn)
 
-		x1 = self.torch.cat((x0, k_feat), 1)	# concat
-		x2 = self.conv_res(x1)
-		x3 = self.conv_tail(x2)
+		x1 = torch.cat((x0, k_feat), 1)	# concat
+		x2 = self.conv(x1)
 
-		return (x3 + x0, knn)
+		return (x2 + x0, knn)

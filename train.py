@@ -81,7 +81,7 @@ def train(args):
 		loss_fn = nn.L1Loss()
 		optimizer = optim.Adam(model.parameters(), args.lr)
 		scheduler = optim.lr_scheduler.ReduceLROnPlateau(
-				optimizer, mode='min', factor=0.1, patience=20, threshold=1e-4, min_lr=1e-5)
+				optimizer, mode='min', factor=0.1, patience=10, threshold=1e-4, min_lr=1e-5)
 		
 		infer_img(ckpt_path + 'init/', num=9, model=model, dataloader=test_dataloader,device=device)	
  
